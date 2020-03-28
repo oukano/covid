@@ -1,0 +1,18 @@
+{
+    "name": "Corona Extention",
+    "version": "1.0",
+    "description": "Build an Extension!",
+
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*.covidmaroc.ma/*"
+            ],
+            "js": [
+                "jquery-3.4.1.min.js",
+                "background.js"
+            ]
+        }
+    ],
+    "manifest_version": 2
+}
