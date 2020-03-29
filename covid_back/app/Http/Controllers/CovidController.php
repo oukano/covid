@@ -64,7 +64,8 @@ class CovidController extends Controller
         $regionCases = [];
         $regions = Region::all();
         foreach ($regions as $region){
-            $regionCases[$region->name] = $region->casesByRegion;
+            $region->cases = $region->casesByRegion;
+            $regionCases[] = $region;
         }
 
         return response()->json([
@@ -101,10 +102,17 @@ class CovidController extends Controller
 
         foreach ($request->all()['cities'] as $req){
             $regionId = Region::where('name', 'like', '%' . $req["city"] . '%')->first()->id;
-            $regionCase = new CaseByRegion();
-            $regionCase->region_id = $regionId;
-            $regionCase->number = $req['confirmed'];
-            $regionCase->save();
+            $today = CaseByRegion::where([['created_at', '>=' , Carbon::today()],['region_id','=',$regionId]])->first();
+
+            if ( !is_null($today) ){
+                $today->number = $req['confirmed'];
+                $today->save();
+            } else{
+                $regionCase = new CaseByRegion();
+                $regionCase->region_id = $regionId;
+                $regionCase->number = $req['confirmed'];
+                $regionCase->save();
+            }
         }
 
         return response()->json([
